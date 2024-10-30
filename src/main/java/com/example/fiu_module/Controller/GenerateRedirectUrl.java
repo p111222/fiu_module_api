@@ -93,7 +93,7 @@ public class GenerateRedirectUrl {
 
         // Make a request to the external API with the extracted entity handle
         // String apiUrl = "https://10.12.218.62:8446/cr/fiu/redirecturl";
-        String apiUrl = "http://api.kriate.co.in:8344/redirection/stub/geturl";
+        String apiUrl = "http://43.204.108.73:8344/redirection/stub/geturl";
         HttpHeaders apiHeaders = new HttpHeaders();
         apiHeaders.add("entityHandle", "@" + entityHandle);
 
