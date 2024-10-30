@@ -4,6 +4,7 @@ package com.example.fiu_module.Controller;
 import com.example.fiu_module.modal.Domain;
 import com.example.fiu_module.repository.DomainRepository;
 import com.example.fiu_module.service.Encryptdecrypt;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.security.MessageDigest;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/redirect")
@@ -85,7 +87,7 @@ public class GenerateRedirectUrl {
         if (aaIdParts.length < 2) {
             String error = "Invalid aaId format. It should contain '@' followed by the entity.";
             // kafkaProducer.sendMessage(errorTopic, error);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", error));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", error));
         }
         String entityHandle = aaIdParts[1];
 
@@ -104,7 +106,7 @@ public class GenerateRedirectUrl {
         } catch (Exception e) {
             String error = "Error calling external API: " + e.getMessage();
             // kafkaProducer.sendMessage(errorTopicExternalApi, error);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", error));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("error", error));
         }
 
         // String webviewUrl="https://aa-uat-onemoney.in";
@@ -114,35 +116,35 @@ public class GenerateRedirectUrl {
         } else {
             String error = "Invalid response from external API";
             // kafkaProducer.sendMessage(errorTopicExternalApi, error);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error",
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("error",
                     error));
         }
         // Validate mandatory parameters
         if (txnid == null || txnid.isEmpty()) {
             String error = "Transaction ID (txnid) is required";
             // kafkaProducer.sendMessage(errorTopic, error);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", error));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", error));
         }
         if (sessionId == null || sessionId.isEmpty()) {
             String error = "Session ID (sessionid) is required";
             // kafkaProducer.sendMessage(errorTopic, error);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", error));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", error));
         }
         if (redirectUrl == null || redirectUrl.isEmpty()) {
             String error = "Redirect URL is required";
             // kafkaProducer.sendMessage(errorTopic, error);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", error));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", error));
         }
         if (srcRef == null || srcRef.length == 0) {
             String error = "Source Reference (srcref) is required";
             // kafkaProducer.sendMessage(errorTopic, error);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error",
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error",
                     error));
         }
         if (aaId == null || aaId.isEmpty()) {
             String error = "Unique requestor identifier (aaId) is required";
             // kafkaProducer.sendMessage(errorTopic, error);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", error));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", error));
         }
         // if (reqdate == null || reqdate.isEmpty()) {
         //     String error = "Request date (reqdate) is required";
@@ -174,7 +176,7 @@ public class GenerateRedirectUrl {
         } catch (DateTimeParseException e) {
         String error = "Invalid reqdate format";
         // kafkaProducer.sendMessage(errorTopic, error);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error",
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error",
         error));
         }
 
@@ -184,7 +186,7 @@ public class GenerateRedirectUrl {
         if (reqDateTime.isAfter(currentTime)) {
         String error = "Request date cannot be in the future";
         // kafkaProducer.sendMessage(errorTopic, error);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error",
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error",
         error));
         }
 
@@ -201,7 +203,7 @@ public class GenerateRedirectUrl {
         if (timeDiff > 180) {
             String error = "Request time exceeded";
             // kafkaProducer.sendMessage(errorTopic, error);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", error));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", error));
         }
 
         // Generate a unique ID for FIU
@@ -336,7 +338,7 @@ public class GenerateRedirectUrl {
             String error = "Error: " + e.getMessage();
             // kafkaProducer.sendMessage(errorTopic, error);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", error));
+                    .body(Collections.singletonMap("error", error));
         }
 
         // Extract the encrypted request from the response
@@ -348,7 +350,7 @@ public class GenerateRedirectUrl {
             String error = "Unexpected response format from encryption service";
             // kafkaProducer.sendMessage(errorTopic, error);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", error));
+                    .body(Collections.singletonMap("error", error));
         }
 
         String baseUrl = String.format("%s?fi=%s&reqdate=%s&ecreq=%s", webviewUrl, encryptedFi, reqdate, encryptedReq);
@@ -408,7 +410,7 @@ public class GenerateRedirectUrl {
         //     requestorTypeResponse = restTemplate.postForEntity(decryptUrl, requestorTypeHttpEntity, String.class);
         } catch (Exception e) {
             String error = "Error: " + e.getMessage();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", error));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("error", error));
         }
 
         String decryptedResponse;
@@ -418,7 +420,7 @@ public class GenerateRedirectUrl {
             // decryptedRequestorType = requestorTypeResponse.getBody();
         } catch (Exception e) {
             String error = "Unexpected response format from decryption service";
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", error));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("error", error));
         }
 
         Map<String, String> responseBody = new HashMap<>();
