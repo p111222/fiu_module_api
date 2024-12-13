@@ -883,7 +883,7 @@ public class GenerateRedirectUrl {
         String fi = request.get("fi");
         String resDate = request.get("resDate");
         String ecres = request.get("ecres");
-        String aaId = request.get("aaId");
+        String aaId = request.get("accountAggregatorId");
         // String requestorType = request.get("requestorType");
 
         String[] aaIdParts = aaId.split("@");
